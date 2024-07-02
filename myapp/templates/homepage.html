@@ -1,0 +1,93 @@
+<!-- myapp/templates/myapp/home.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url("{% static 'background5.jpg' %}"); /* Path to your background image */
+            background-size: cover; /* Make sure the image covers the whole page */
+            background-repeat: no-repeat; /* Prevent the image from repeating */
+            background-position: center; /* Center the image */
+            margin: 0;
+            padding: 20px;
+        }
+        .home-container {
+            background-color: #A0A0A0;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 300px;
+            max-width: 80%;
+            margin: 20px auto;
+        }
+        .home-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .home-container p {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .home-container form,
+        .home-container p {
+            display: flex;
+            justify-content: center;
+        }
+        .home-container form button,
+        .home-container p a {
+            margin: 10px;
+            padding: 15px 30px; /* Increased padding for better spacing */
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .home-container form button:hover,
+        .home-container p a:hover {
+            background-color: #0056b3;
+        }
+        .logo {
+            width: 200px; /* Adjust size as needed */
+            height: 200px; /* Adjust size as needed */
+            border-radius: 50%; /* Ensures the image is round */
+            margin: 20px auto; /* Center the image horizontally */
+            display: block; /* Ensures it respects the margin settings */
+        }
+    </style>
+</head>
+<body>
+    <div class="home-container">
+        <h2>Welcome, {{ full_name|title}}</h2>
+        <img class="logo" src="{% static 'logo.png' %}">
+        <p>Role: {{ role |title}}</p>
+
+        {% if role == 'student' %}
+            <form method="post" action="{% url 'activity' 'murajaah' %}">
+                {% csrf_token %}
+                <button type="submit">Murajaah</button>
+            </form>
+            
+            <form method="post" action="{% url 'activity' 'tasmik' %}">
+                {% csrf_token %}
+                <button type="submit">Tasmik</button>
+            </form>
+
+            <form method="get" action="{% url 'record' %}">
+                <button type="submit">Record</button>
+            </form>
+        {% elif role == 'teacher' %}
+            <p><a href="{% url 'teacher_activity' %}">Teacher Activity</a></p>
+            <p><a href="{% url 'semester_buttons' %}">View Student Records</a></p>
+        {% endif %}
+
+        <p><a href="{% url 'logout' %}">Logout</a></p>
+    </div>
+</body>
+</html>

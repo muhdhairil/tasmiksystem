@@ -1,0 +1,159 @@
+{% load custom_filters %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ activity_type }}</title>
+    <style>
+        body {
+            font-family: 'Arial', 'Helvetica', sans-serif;
+            background-image: url("{% static 'background5.jpg' %}"); /* Path to your background image */
+            background-size: cover; /* Make sure the image covers the whole page */
+            background-repeat: no-repeat; /* Prevent the image from repeating */
+            background-position: center; /* Center the image */
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background-color: #696969;
+            padding: 5px;
+            color: white;
+            text-align: center;
+            position: sticky;
+            top: 0;
+        }
+        .navbar h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .search-bar {
+            margin: 4px 0;
+            text-align: center;
+        }
+        .search-bar form {
+            display: inline-block;
+        }
+        .search-bar input {
+            padding: 5px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #A0A0A0;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 10px;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+        .quran-text {
+            font-family: 'Traditional Arabic', 'Arial', sans-serif;
+            font-size: 24px;
+            text-align: right;
+            direction: rtl;
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        select {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>{{ activity_type|title }}</h1>
+        <div class="search-bar">
+            <form method="get" action="{% url 'activity' activity_type=activity_type %}">
+                <label for="page_number" style="color: white;">Page Number:</label>
+                <input type="number" id="page_number" name="page_number" required>
+                <button type="submit">Go to Page</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="container">
+        <ul>
+            <h1 class="quran-text" style="text-align: center;">
+                {{ page_data.number|arabic_numeral }} 
+            </h1>
+        </ul>
+        <ul>
+            {% for ayah in page_data.ayahs %}
+                <li class="quran-text">{{ ayah.text }} | {{ ayah.numberInSurah|arabic_numeral }}</li>
+            {% endfor %}
+        </ul>
+
+        <div class="button-container">
+            <form method="post" action="{% url 'activity' activity_type %}">
+                {% csrf_token %}
+                <input type="hidden" name="page_number" value="{{ page_number|add:-1 }}">
+                <button type="submit">Previous</button>
+            </form>
+            
+            <form method="post" action="{% url 'activity' activity_type %}">
+                {% csrf_token %}
+                <input type="hidden" name="page_number" value="{{ page_number|add:1 }}">
+                <button type="submit">Next</button>
+            </form>
+        </div>
+
+        <form method="post" action="{% url 'choose_teacher' %}">
+            {% csrf_token %}
+            <input type="hidden" name="page_data" value="{{ page_data.number }}">
+            <input type="hidden" name="activity_type" value="{{ activity_type }}">
+
+            <label for="teacher">Choose a Teacher:</label>
+            <select id="teacher" name="teacher">
+                {% for teacher in teachers %}
+                    <option value="{{ teacher.id }}">{{ teacher.teacher_name }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit">Choose Teacher</button>
+        </form>
+
+        <div class="button-container">
+            <form method="get" action="{% url 'home' %}">
+                <button type="submit">Home</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
